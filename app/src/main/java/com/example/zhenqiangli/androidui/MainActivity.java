@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     rvContainer.setLayoutManager(layoutManager);
     RvContainerAdapter adapter = new RvContainerAdapter(this);
     rvContainer.setAdapter(adapter);
-    rvContainer.setOnScrollChangeListener(adapter);
     snapHelper = new RvContainerSnapHelper();
     snapHelper.attachToRecyclerView(rvContainer);
   }
@@ -93,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private class RvContainerAdapter extends RecyclerView.Adapter<RvViewHolder> implements RecyclerView.OnScrollChangeListener {
+  private class RvContainerAdapter extends RecyclerView.Adapter<RvViewHolder> {
 
     private List<Item> items = new LinkedList<>();
     Context context;
@@ -124,12 +122,6 @@ public class MainActivity extends AppCompatActivity {
     public int getItemCount() {
       Log.d(TAG, "getItemCount: " + items.size());
       return items.size();
-    }
-
-    @Override
-    public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-      ViewHolder vh = rvContainer.findViewHolderForLayoutPosition(0);
-      Log.d(TAG, "onScrollChange: " + vh);
     }
   }
 
