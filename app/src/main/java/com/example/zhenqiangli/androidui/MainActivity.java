@@ -111,11 +111,12 @@ public class MainActivity extends AppCompatActivity {
         }
       }
 
-      void onBinding(View v, int position) {
+      void onBinding(RvViewHolder viewHolder, int position) {
         if (scrolled) return;
 
-        if (position == 0) {
-          onItemSelected(v);
+        // The first snap view is index 2
+        if (position == 2) {
+          viewHolder.onItemSelected(viewHolder.itemView);
         } else {
           onItemSelected(null);
         }
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBindViewHolder(RvViewHolder holder, int position) {
       Log.d(TAG, "onBindViewHolder: " + holder + " " + position);
       holder.bindData(items.get(position));
-      scrolledObserver.onBinding(holder.itemView, position);
+      scrolledObserver.onBinding(holder, position);
     }
 
     @Override
