@@ -50,9 +50,40 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
+  private class Item {
+    Drawable[] BACKGROUNDS = {
+      getDrawable(R.drawable.item_rv_background),
+      getDrawable(R.drawable.item_rv_background_replace),
+    };
+    private String text;
+    private Drawable background;
+    private int backgroundId;
+
+    Item(String text) {
+      this.text = text;
+      this.background = BACKGROUNDS[0];
+      this.backgroundId = 0;
+    }
+
+    Drawable getBackground() {
+      return background;
+    }
+
+    Drawable switchBackground() {
+      if (backgroundId == 0) {
+        background = BACKGROUNDS[1];
+        backgroundId = 1;
+      } else {
+        background = BACKGROUNDS[0];
+        backgroundId = 0;
+      }
+      return background;
+    }
+  }
+
   private class RvContainerAdapter extends RecyclerView.Adapter<RvViewHolder> implements RecyclerView.OnScrollChangeListener {
 
-    private List<String> datas = new LinkedList<>();
+    private List<Item> items = new LinkedList<>();
     Context context;
 
     private class ScrolledObserver {
@@ -83,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
     RvContainerAdapter(Context context) {
       Log.d(TAG, "RvContainerAdapter: ");
       for (int i = 0; i < 100; i++) {
-        datas.add("Hello " + i);
+        items.add(new Item("Hello " + i));
       }
       this.context = context;
     }
@@ -98,14 +129,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBindViewHolder(RvViewHolder holder, int position) {
       Log.d(TAG, "onBindViewHolder: " + holder + " " + position);
-      holder.bindData(datas.get(position));
+      holder.bindData(items.get(position));
       scrolledObserver.onBinding(holder.itemView, position);
     }
 
     @Override
     public int getItemCount() {
-      Log.d(TAG, "getItemCount: " + datas.size());
-      return datas.size();
+      Log.d(TAG, "getItemCount: " + items.size());
+      return items.size();
     }
 
     @Override
@@ -118,14 +149,12 @@ public class MainActivity extends AppCompatActivity {
 
   private class RvViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
     boolean selected = false;
-    Drawable drawable = getDrawable(R.drawable.item_rv_background_replace);
+    Item item;
 
     @Override
     public void onClick(View v) {
-      Drawable newDrawable = itemView.getBackground();
-      itemView.setBackground(drawable);
-      drawable = newDrawable;
       Log.d(TAG, "onClick: ");
+      itemView.setBackground(item.switchBackground());
     }
 
     RvViewHolder(View v) {
@@ -134,9 +163,11 @@ public class MainActivity extends AppCompatActivity {
       Log.d(TAG, "RvViewHolder: ");
     }
 
-    void bindData(String s) {
+    void bindData(Item item) {
       Log.d(TAG, "bindData: ");
-      ((TextView) itemView).setText(s);
+      ((TextView) itemView).setText(item.text);
+      itemView.setBackground(item.getBackground());
+      this.item = item;
     }
   }
 }
