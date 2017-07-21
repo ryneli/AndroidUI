@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = "MainActivity";
   RecyclerView rvContainer;
+  RvContainerSnapHelper snapHelper;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +35,28 @@ public class MainActivity extends AppCompatActivity {
     RvContainerAdapter adapter = new RvContainerAdapter(this);
     rvContainer.setAdapter(adapter);
     rvContainer.setOnScrollChangeListener(adapter);
-    RvContainerSnapHelper snapHelper = new RvContainerSnapHelper();
+    snapHelper = new RvContainerSnapHelper();
     snapHelper.attachToRecyclerView(rvContainer);
   }
 
-  private class RvContainerSnapHelper extends LinearSnapHelper {
+  private static class RvContainerSnapHelper extends LinearSnapHelper {
+    interface SelectedViewListener {
+      void onItemSelected(View v);
+    }
+    private List<SelectedViewListener> listeners = new LinkedList<>();
+
+    void addSelectedViewListener(SelectedViewListener listener) {
+      listeners.add(listener);
+    }
 
     @Override
     public View findSnapView(LayoutManager layoutManager) {
       View v = super.findSnapView(layoutManager);
       if (v instanceof TextView) {
         Log.d(TAG, "findSnapView: " + ((TextView)v).getText());
+      }
+      for (SelectedViewListener listener : listeners) {
+        listener.onItemSelected(v);
       }
       return v;
     }
@@ -147,19 +159,27 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private class RvViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+  private class RvViewHolder extends RecyclerView.ViewHolder implements OnClickListener, RvContainerSnapHelper.SelectedViewListener {
     boolean selected = false;
     Item item;
 
     @Override
+    public void onItemSelected(View v) {
+      selected = (itemView == v);
+    }
+
+    @Override
     public void onClick(View v) {
       Log.d(TAG, "onClick: ");
-      itemView.setBackground(item.switchBackground());
+      if (selected) {
+        itemView.setBackground(item.switchBackground());
+      }
     }
 
     RvViewHolder(View v) {
       super(v);
       v.setOnClickListener(this);
+      snapHelper.addSelectedViewListener(this);
       Log.d(TAG, "RvViewHolder: ");
     }
 
