@@ -98,30 +98,6 @@ public class MainActivity extends AppCompatActivity {
     private List<Item> items = new LinkedList<>();
     Context context;
 
-    private class ScrolledObserver {
-      private boolean scrolled = false;
-
-      void setScrolled() {
-        this.scrolled = true;
-      }
-
-      private void onItemSelected(View v) {
-        if (v == null) {
-          Log.d(TAG, "onItemSelected: null");
-        }
-      }
-
-      void onBinding(View v, int position) {
-        if (scrolled) return;
-
-        if (position == 0) {
-          onItemSelected(v);
-        } else {
-          onItemSelected(null);
-        }
-      }
-    }
-    private ScrolledObserver scrolledObserver = new ScrolledObserver();
 
     RvContainerAdapter(Context context) {
       Log.d(TAG, "RvContainerAdapter: ");
@@ -142,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
     public void onBindViewHolder(RvViewHolder holder, int position) {
       Log.d(TAG, "onBindViewHolder: " + holder + " " + position);
       holder.bindData(items.get(position));
-      scrolledObserver.onBinding(holder.itemView, position);
     }
 
     @Override
@@ -155,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
     public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
       ViewHolder vh = rvContainer.findViewHolderForLayoutPosition(0);
       Log.d(TAG, "onScrollChange: " + vh);
-      scrolledObserver.setScrolled();
     }
   }
 
