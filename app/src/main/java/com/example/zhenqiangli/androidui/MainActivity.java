@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
+import android.support.v7.widget.RecyclerView.State;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,19 +23,31 @@ public class MainActivity extends AppCompatActivity {
   private static final String TAG = "MainActivity";
   RecyclerView rvContainer;
   RvContainerSnapHelper snapHelper;
+  RvContainerAdapter adapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+    RvContainerLayoutManager layoutManager = new RvContainerLayoutManager(this);
     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
     rvContainer = (RecyclerView) findViewById(R.id.rv_container);
     rvContainer.setLayoutManager(layoutManager);
-    RvContainerAdapter adapter = new RvContainerAdapter(this);
+    adapter = new RvContainerAdapter(this);
     rvContainer.setAdapter(adapter);
     snapHelper = new RvContainerSnapHelper();
     snapHelper.attachToRecyclerView(rvContainer);
+  }
+
+  private class RvContainerLayoutManager extends LinearLayoutManager {
+    public RvContainerLayoutManager(Context context) {
+      super(context);
+    }
+    @Override
+    public void onLayoutCompleted(State state) {
+      super.onLayoutCompleted(state);
+      adapter.selectFirstView();
+    }
   }
 
   private static class RvContainerSnapHelper extends LinearSnapHelper {
@@ -103,6 +116,11 @@ public class MainActivity extends AppCompatActivity {
         items.add(new Item("Hello " + i));
       }
       this.context = context;
+    }
+
+    public void selectFirstView() {
+      RvViewHolder viewHolder = (RvViewHolder) rvContainer.findViewHolderForLayoutPosition(2);
+      viewHolder.onItemSelected(viewHolder.itemView);
     }
 
     @Override
