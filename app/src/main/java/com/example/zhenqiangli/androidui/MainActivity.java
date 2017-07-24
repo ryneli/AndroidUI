@@ -38,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private static class RvContainerSnapHelper extends LinearSnapHelper {
+    private boolean selected = false;
+
+    boolean isSelected() {
+      return selected;
+    }
+
     interface SelectedViewListener {
       void onItemSelected(View v);
     }
@@ -55,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
       }
       for (SelectedViewListener listener : listeners) {
         listener.onItemSelected(v);
+        selected = true;
       }
       return v;
     }
@@ -137,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onClick(View v) {
       Log.d(TAG, "onClick: ");
-      if (selected) {
+      if (selected || (!snapHelper.isSelected() && (getLayoutPosition() == 2))) {
         itemView.setBackground(item.switchBackground());
       }
     }
